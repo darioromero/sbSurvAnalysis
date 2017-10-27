@@ -1,0 +1,93 @@
+---
+title: "Survival Analysis - An Essay for Compressor Failure Prediction"
+author: "Dario H. Romero - Oil & Gas Data Scientist"
+date: "April 6, 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# What is Survival Analysis
+
+Survival analysis is also called duration analysis, transition analysis, failure time analysis, and time-to-event analysis. For the sake of centering the discussion of this topic I would do a brief review of the theory behind, an exercise for survival analysis in medicine and then use that topic for predicting pump failures in an Oil & Gas setup, in particular Compressor Failure Analysis & Prediction.
+
+# Data Set for Analysis
+
+I will be utilizing a Permutational Algorithm for Survival Analysis packaged under the library [PermAlgo](https://cran.r-project.org/web/packages/PermAlgo/PermAlgo.pdf), to generate synthetic data for this anlysis.
+
+# Rationale of Survival Analysis
+
+In Survival Analysis we are concerned in situations where:
+
+ - Subjects are tracked until an event happens (failure) or we lose them from the sample (censored observations).
+ - We are interested in how long they stay in the sample (survival).
+ - We are also interested in their risk of failure (hazard rates).
+
+
+# Survival Estimation of time-to-event data as an approximation to Pump Failure Analysis
+
+Survival estimates are an essential compliment to multivariable regression models for
+time-to-event data, both for prediction and illustration of covariate effects. They are
+easily obtained under the Cox proportional-hazards model (CoxPH).
+
+One of the strengths of the Cox model is its ability to encompass covariates that change over
+time. The practical reason that time-dependent covariates work is based on the underlying way
+in which the Cox model works: at each event time the program compares the current covariate
+values of the subject who had the event to the current values of all others who were at risk at
+that time.
+
+For further in depth analysis please take a look at this [document](http://rstudio-pubs-static.s3.amazonaws.com/5896_8f0fed2ccbbd42489276e554a05af87e.html)
+
+## Mathematical Background
+
+Let $Y_i(t), i = 1, . . . , n$ be the indicator that subject $i$ is at risk and under observation at
+time $t$. Let $N_{i}(t)$ be the step function for the $i_{th}$ subject, which counts the number of
+“events” for that subject up to time $t$. The total number of deaths that have occurred
+up to time $t$ will be $\overline{N}(t) = \sum N_i(t)$, and the number of subjects at risk at time $t$ will
+be $\overline{Y}(t) = \sum Y_i(t)$. It will also be useful to define $d(t)$ as the number of deaths that
+occur exactly at time $t$.
+
+---
+
+## Survival Estimation
+
+The most common estimate of the survival distribution, the `Kaplan-Meier (KM)` estimate,
+is a product of survival probabilities:
+$$\hat{S}_{KM}(t) =  \prod_{t_i < t}\frac{\overline{Y}(t_i) - d(t_i)}{\overline{Y}(t_i)}$$
+
+Graphically, the `Kaplan-Meier survival curve` appears as a step function with a drop at
+each death. Censoring times are often marked on the plot as “+” symbols.
+
+
+---
+
+## Libraries
+
+```{r libraies}
+## Load survival package
+library(survival)
+## List datasets in survival package
+#data(package = "survival")
+
+## Load lung data
+data(lung)
+
+## Show first 6 rows
+head(lung)
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+set.seed(123)
+plot(x = lung$time, y = lung$status - 1)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
